@@ -9,6 +9,16 @@ same event sees votes update live over a WebSocket connection.
 Events are stored as JSON files on disk by a small local API server (see
 `api/`).
 
+## How it works
+
+1. Create an event with a title and the date range you're choosing from.
+2. Share the link — anyone who opens it can add themselves and mark the
+   days they're free.
+3. Watch the overlap update live as people vote, and switch between
+   Calendar, List, or Grid views to see who's free when.
+
+![Creating an event, two people marking their availability, and the overlap updating live](docs/demo.gif)
+
 ## Developing locally
 
 Run the frontend and API in two terminals:

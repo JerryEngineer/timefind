@@ -40,6 +40,12 @@ export function EventSetup({ onSubmit }: EventSetupProps) {
     <form className="event-setup" onSubmit={handleSubmit}>
       <Brand size="lg" />
       <p className="subtitle">Find a day that works for everyone.</p>
+      <p className="feature-strip">
+        No sign-up · Free forever ·{" "}
+        <a href="https://github.com/JerryEngineer/timefind" target="_blank" rel="noopener noreferrer">
+          Open source
+        </a>
+      </p>
 
       <label>
         Event title
