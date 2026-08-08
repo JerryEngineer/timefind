@@ -50,28 +50,49 @@ docker compose down            # stop
 
 ## Deploying to production
 
-The same Docker Compose setup is what you deploy — there's no separate
-build for production. All you need is a server with Docker installed.
+Every push to `main` triggers `.github/workflows/docker-publish.yml`, which
+builds the image and pushes it to GitHub Container Registry as
+`ghcr.io/jerryengineer/timefind:latest` (and `:<commit-sha>`, for rollback).
+The server just pulls that image — it never needs the source code, `npm`,
+or a build step of its own.
 
 1. **Get a server.** Any small VPS works (DigitalOcean, Hetzner, etc.) —
    this app is lightweight. Install
    [Docker Engine + the Compose plugin](https://docs.docker.com/engine/install/)
    on it.
 
-2. **Copy the code over**, e.g. `git clone` the repo directly on the
-   server, or `scp`/`rsync` it from your machine.
+2. **Make the package pullable.** By default a package pushed via
+   `GITHUB_TOKEN` is private. Either:
+   - Go to the package's page on GitHub (your profile/org → **Packages** →
+     `timefind`) → **Package settings** → change visibility to **Public**
+     (simplest — anyone, including your server, can then `docker pull`
+     with no login), or
+   - Keep it private and `docker login ghcr.io` on the server with a
+     [personal access token](https://github.com/settings/tokens) that has
+     the `read:packages` scope.
 
-3. **Start it:**
+3. **Copy just the compose file over** — the server only needs
+   `docker-compose.yml` (and an `api/data` folder next to it for the bind
+   mount), not the whole repo:
 
    ```
-   docker compose up --build -d
+   scp docker-compose.yml your-server:~/timefind/
    ```
 
-   The app is now serving on port 3001. `api/data` on the host holds every
-   event as a JSON file — that's the entire database, so back it up by
-   copying that folder.
+4. **Pull and start it:**
 
-4. **Put it on a real domain with HTTPS.** Port 3001 alone is HTTP-only.
+   ```
+   cd ~/timefind
+   mkdir -p api/data
+   docker compose pull
+   docker compose up -d
+   ```
+
+   The app is now serving on port 3001. `api/data` holds every event as a
+   JSON file — that's the entire database, so back it up by copying that
+   folder.
+
+5. **Put it on a real domain with HTTPS.** Port 3001 alone is HTTP-only.
    The simplest way to add a domain + automatic HTTPS is a
    [Caddy](https://caddyserver.com/) reverse proxy in front — it's one
    file, and it handles certificates for you. Install Caddy on the server
@@ -87,11 +108,14 @@ build for production. All you need is a server with Docker installed.
    service). Point your domain's DNS A record at the server's IP first —
    Caddy needs that to issue a certificate.
 
-5. **Deploying updates:** pull the latest code and rebuild —
+6. **Deploying updates:** once a push to `main` finishes building, just
+   pull the new image and restart —
 
    ```
-   git pull
-   docker compose up --build -d
+   docker compose pull
+   docker compose up -d
    ```
 
-   `api/data` isn't touched by a rebuild, so existing events survive.
+   `api/data` isn't touched, so existing events survive. To roll back,
+   swap `:latest` for a specific `:<commit-sha>` tag in
+   `docker-compose.yml` and repeat the pull/up.
