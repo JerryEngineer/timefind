@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { Brand } from "../components/Brand";
 import { OverlapView } from "../components/OverlapView";
 import { EditEventModal } from "../components/EditEventModal";
 import { PersonAvailabilityCalendar } from "../components/PersonAvailabilityCalendar";
@@ -220,6 +221,8 @@ export function EventPage() {
 
   return (
     <>
+      <Brand size="sm" />
+
       <header className="event-header">
         <div className="event-header-top">
           <h1>{title}</h1>

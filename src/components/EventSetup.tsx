@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Brand } from "./Brand";
 import { DateRangeEditor } from "./DateRangeEditor";
 import type { DateRange, EventConfig } from "../types";
 
@@ -37,7 +38,7 @@ export function EventSetup({ onSubmit }: EventSetupProps) {
 
   return (
     <form className="event-setup" onSubmit={handleSubmit}>
-      <h1>TimeFind</h1>
+      <Brand size="lg" />
       <p className="subtitle">Find a day that works for everyone.</p>
 
       <label>

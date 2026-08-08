@@ -56,6 +56,52 @@ h2 {
   padding: 24px 16px 64px;
 }
 
+/* Brand */
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: var(--text-h);
+}
+
+.brand-logo {
+  display: block;
+}
+
+.brand-name {
+  font-weight: 700;
+}
+
+.brand-sm {
+  margin-bottom: 24px;
+  gap: 10px;
+}
+
+.brand-sm .brand-logo {
+  width: 36px;
+  height: 36px;
+}
+
+.brand-sm .brand-name {
+  font-size: 24px;
+}
+
+.brand-lg {
+  justify-content: center;
+  gap: 10px;
+}
+
+.brand-lg .brand-logo {
+  width: 42px;
+  height: 42px;
+}
+
+.brand-lg .brand-name {
+  font-size: 26px;
+}
+
 /* Event setup */
 
 .event-setup {
@@ -64,11 +110,6 @@ h2 {
   gap: 16px;
   max-width: 720px;
   margin: 48px auto 0;
-}
-
-.event-setup h1 {
-  font-size: 32px;
-  text-align: center;
 }
 
 .subtitle {
