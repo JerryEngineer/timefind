@@ -119,3 +119,46 @@ or a build step of its own.
    `api/data` isn't touched, so existing events survive. To roll back,
    swap `:latest` for a specific `:<commit-sha>` tag in
    `docker-compose.yml` and repeat the pull/up.
+
+### Deploying without repo access
+
+If you just want to run someone else's already-published TimeFind image
+(the package is public), you don't need the source repo at all — only
+Docker and this one file.
+
+1. **Get a server and install Docker**, same as above:
+
+   ```
+   curl -fsSL https://get.docker.com | sh
+   sudo usermod -aG docker $USER   # log out/in afterward
+   ```
+
+2. **Create `~/timefind/docker-compose.yml` by hand:**
+
+   ```yaml
+   services:
+     timefind:
+       image: ghcr.io/jerryengineer/timefind:latest
+       ports:
+         - "3001:3001"
+       volumes:
+         - ./api/data:/app/data
+       restart: unless-stopped
+   ```
+
+   (Same as the repo's compose file, minus `build: .` — there's no source
+   to build here, so `latest` always resolves to whatever the owner's CI
+   last published.)
+
+3. **Pull and run:**
+
+   ```
+   cd ~/timefind
+   mkdir -p api/data
+   docker compose pull
+   docker compose up -d
+   ```
+
+   Check it with `docker compose ps` and `curl http://localhost:3001`, or
+   visit `http://your-server-ip:3001`. Domain + HTTPS setup is the same
+   Caddy step as above.
