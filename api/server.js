@@ -126,10 +126,21 @@ function dateInRanges(date, ranges) {
   return ranges.some((r) => date >= r.start && date <= r.end);
 }
 
+const MAX_PEOPLE = 50;
+
 app.post("/api/events", async (req, res) => {
-  const { title, description, dateRanges, password } = req.body ?? {};
+  const { title, description, dateRanges, password, people } = req.body ?? {};
   if (!title || !Array.isArray(dateRanges) || dateRanges.length === 0 || !dateRanges.every(isValidDateRange)) {
     return res.status(400).json({ error: "title and a non-empty list of valid dateRanges are required" });
+  }
+  if (
+    people !== undefined &&
+    (!Array.isArray(people) ||
+      people.length === 0 ||
+      people.length > MAX_PEOPLE ||
+      !people.every((name) => typeof name === "string"))
+  ) {
+    return res.status(400).json({ error: `people must be a list of 1-${MAX_PEOPLE} names` });
   }
 
   const id = await generateUniqueId();
@@ -140,10 +151,7 @@ app.post("/api/events", async (req, res) => {
     dateRanges,
     passwordHash: typeof password === "string" && password !== "" ? hashPassword(password) : null,
     createdAt: new Date().toISOString(),
-    people: [
-      { id: generateId(), name: "Person 1", selectedDates: [] },
-      { id: generateId(), name: "Person 2", selectedDates: [] },
-    ],
+    people: (people ?? ["Person 1", "Person 2"]).map((name) => ({ id: generateId(), name, selectedDates: [] })),
   };
   await writeEvent(event);
   res.status(201).json(toPublicEvent(event));
@@ -155,8 +163,6 @@ app.get("/api/events/:id", async (req, res) => {
   if (!checkAccess(req, res, event)) return;
   res.json(toPublicEvent(event));
 });
-
-const MAX_PEOPLE = 50;
 
 app.post("/api/events/:id/people", async (req, res) => {
   const event = await readEvent(req.params.id);

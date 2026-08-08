@@ -438,12 +438,22 @@ h2 {
 
 .people-editor-row input {
   flex: 1;
+  font: inherit;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text-h);
 }
 
-.people-editor-remove {
+.people-editor .people-editor-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
   width: 32px;
   height: 32px;
+  padding: 0;
   border: 1px solid var(--border);
   border-radius: 8px;
   background: var(--bg);
@@ -453,17 +463,17 @@ h2 {
   cursor: pointer;
 }
 
-.people-editor-remove:hover:not(:disabled) {
+.people-editor .people-editor-remove:hover:not(:disabled) {
   color: var(--error);
   border-color: var(--error);
 }
 
-.people-editor-remove:disabled {
+.people-editor .people-editor-remove:disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }
 
-.people-editor-add {
+.people-editor .people-editor-add {
   font: inherit;
   font-size: 14px;
   font-weight: 500;
@@ -475,13 +485,13 @@ h2 {
   cursor: pointer;
 }
 
-.people-editor-add:hover:not(:disabled) {
+.people-editor .people-editor-add:hover:not(:disabled) {
   background: var(--accent-bg);
   border-color: var(--accent);
   color: var(--accent);
 }
 
-.people-editor-add:disabled {
+.people-editor .people-editor-add:disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }

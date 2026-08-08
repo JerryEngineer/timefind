@@ -12,6 +12,8 @@ export interface EventConfig {
   password?: string;
   /** Update-only: clears the event's password. */
   removePassword?: boolean;
+  /** Create-only: initial list of people's names. Ignored on update. */
+  people?: string[];
 }
 
 export interface PersonAvailability {
