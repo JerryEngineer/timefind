@@ -1,0 +1,24 @@
+name: Feedback
+description: Share an idea, report a problem, or just let us know what you think.
+title: "[Feedback]: "
+labels: ["feedback"]
+body:
+  - type: textarea
+    id: feedback
+    attributes:
+      label: What's on your mind?
+      description: Bug, idea, confusing moment — anything.
+      placeholder: Tell us what happened, or what you'd like to see.
+    validations:
+      required: true
+  - type: dropdown
+    id: type
+    attributes:
+      label: Type (optional)
+      options:
+        - Bug report
+        - Feature idea
+        - Something confusing
+        - Other
+    validations:
+      required: false

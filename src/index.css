@@ -57,16 +57,21 @@ h2 {
   padding: 24px 16px 64px;
 }
 
-.help-link {
+.corner-links {
   position: absolute;
   top: 24px;
   right: 16px;
+  display: flex;
+  gap: 12px;
+}
+
+.corner-links a {
   color: var(--accent);
   font-size: 14px;
   text-decoration: none;
 }
 
-.help-link:hover {
+.corner-links a:hover {
   text-decoration: underline;
 }
 
