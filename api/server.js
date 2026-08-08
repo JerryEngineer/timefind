@@ -237,6 +237,12 @@ app.put("/api/events/:id", async (req, res) => {
   res.json(toPublicEvent(event));
 });
 
+app.use(express.static(path.join(__dirname, "dist")));
+
+app.get(/^(?!\/api).*/, (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "index.html"));
+});
+
 server.listen(PORT, () => {
   console.log(`timefind api listening on http://localhost:${PORT}`);
 });
