@@ -20,7 +20,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --text: #b8b3c2;
     --text-h: #f3f4f6;
     --bg: #16171d;
@@ -32,7 +32,27 @@
     --match-bg: rgba(74, 222, 128, 0.18);
     --partial-bg: rgba(192, 132, 252, 0.1);
     --error: #f87171;
+    color-scheme: dark;
   }
+}
+
+:root[data-theme="dark"] {
+  --text: #b8b3c2;
+  --text-h: #f3f4f6;
+  --bg: #16171d;
+  --panel-bg: #1c1d24;
+  --border: #2e303a;
+  --accent: #c084fc;
+  --accent-bg: rgba(192, 132, 252, 0.15);
+  --match: #4ade80;
+  --match-bg: rgba(74, 222, 128, 0.18);
+  --partial-bg: rgba(192, 132, 252, 0.1);
+  --error: #f87171;
+  color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
 }
 
 * {
@@ -63,6 +83,7 @@ h2 {
   top: 24px;
   right: 16px;
   display: flex;
+  align-items: center;
   gap: 12px;
 }
 
@@ -74,6 +95,25 @@ h2 {
 
 .corner-links a:hover {
   text-decoration: underline;
+}
+
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.theme-toggle:hover {
+  color: var(--accent);
+  border-color: var(--accent);
 }
 
 /* Brand */
