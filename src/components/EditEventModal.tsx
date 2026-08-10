@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { DateRangeEditor } from "./DateRangeEditor";
+import { DateRangePicker } from "./DateRangePicker";
 import type { DateRange, EventConfig, PersonAvailability } from "../types";
 
 interface EditEventModalProps {
@@ -121,6 +121,11 @@ export function EditEventModal({
           </label>
         )}
 
+        <div className="date-range-field">
+          <p className="people-editor-label">Dates</p>
+          <DateRangePicker ranges={draftRanges} onChange={setDraftRanges} />
+        </div>
+
         <div className="people-editor">
           <p className="people-editor-label">People</p>
           {people.map((person) => (
@@ -148,8 +153,6 @@ export function EditEventModal({
             + Add person
           </button>
         </div>
-
-        <DateRangeEditor ranges={draftRanges} onChange={setDraftRanges} />
       </div>
       <div className="event-editor-actions">
         <button type="button" onClick={handleSave} disabled={!isValid || isSaving}>

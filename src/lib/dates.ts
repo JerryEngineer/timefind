@@ -77,21 +77,9 @@ export function isWeekend(iso: string): boolean {
   return day === 0 || day === 6;
 }
 
-export function isWeekday(iso: string): boolean {
-  return !isWeekend(iso);
-}
-
 function lastDayOfMonth(year: number, monthIndex: number): string {
   // day 0 of the month after `monthIndex` rolls back to the last day of `monthIndex`
   return toISODate(new Date(year, monthIndex + 1, 0));
-}
-
-export function weekdaysOnlyRanges(window: DateRange): DateRange[] {
-  return groupConsecutiveDates(dateRange(window.start, window.end).filter(isWeekday));
-}
-
-export function weekendsOnlyRanges(window: DateRange): DateRange[] {
-  return groupConsecutiveDates(dateRange(window.start, window.end).filter(isWeekend));
 }
 
 /** The full range for a given calendar month. */
@@ -102,16 +90,27 @@ export function monthDateRange(year: number, monthIndex: number): DateRange {
   };
 }
 
-/** Leading blank cells (for days-of-week padding) followed by one date string per day of the month. */
-export function monthCells(year: number, monthIndex: number): (string | null)[] {
+/**
+ * Leading blank cells (for days-of-week padding) followed by one date string per day of the
+ * month. With `padToSixRows`, trailing blanks are added so every month renders the same total
+ * cell count (42 = 6 rows) — used where a variable row count would otherwise reflow the layout
+ * around it (e.g. a popover) as you navigate between months.
+ */
+export function monthCells(year: number, monthIndex: number, padToSixRows = false): (string | null)[] {
   const firstOfMonth = new Date(year, monthIndex, 1);
   const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
   const leadingBlanks = firstOfMonth.getDay();
 
-  return [
+  const cells = [
     ...Array(leadingBlanks).fill(null),
     ...Array.from({ length: daysInMonth }, (_, i) => toISODate(new Date(year, monthIndex, i + 1))),
   ];
+
+  if (padToSixRows) {
+    cells.push(...Array(Math.max(0, 42 - cells.length)).fill(null));
+  }
+
+  return cells;
 }
 
 export const WEEKDAY_LABELS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
@@ -131,10 +130,20 @@ export const MONTH_NAMES = [
   "December",
 ];
 
-/** Today's value in the "YYYY-MM" shape `<input type="month">` expects. */
-export function currentMonthValue(): string {
-  const now = new Date();
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+export interface MonthValue {
+  year: number;
+  monthIndex: number;
+}
+
+/** Adds `n` months (may be negative) to a year/monthIndex pair. */
+export function addMonths({ year, monthIndex }: MonthValue, n: number): MonthValue {
+  const total = year * 12 + monthIndex + n;
+  return { year: Math.floor(total / 12), monthIndex: ((total % 12) + 12) % 12 };
+}
+
+/** Compact "Aug 13" style label, used in the date-range picker's trigger button. */
+export function formatShortDate(iso: string): string {
+  return parseISODate(iso).toLocaleDateString(undefined, { month: "short", day: "numeric" });
 }
 
 /** Every year/month pair from `startValue` to `endValue` (both "YYYY-MM"), inclusive. */

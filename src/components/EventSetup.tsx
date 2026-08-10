@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Brand } from "./Brand";
-import { DateRangeEditor } from "./DateRangeEditor";
+import { DateRangePicker } from "./DateRangePicker";
 import type { DateRange, EventConfig } from "../types";
 
 const MAX_PEOPLE = 50;
@@ -79,6 +79,11 @@ export function EventSetup({ onSubmit }: EventSetupProps) {
         />
       </label>
 
+      <div className="date-range-field">
+        <p className="people-editor-label">Dates</p>
+        <DateRangePicker ranges={dateRanges} onChange={setDateRanges} />
+      </div>
+
       <div className="people-editor">
         <p className="people-editor-label">People</p>
         {people.map((name, index) => (
@@ -104,8 +109,6 @@ export function EventSetup({ onSubmit }: EventSetupProps) {
           + Add person
         </button>
       </div>
-
-      <DateRangeEditor ranges={dateRanges} onChange={setDateRanges} />
 
       <button type="submit" disabled={!isValid}>
         Start voting

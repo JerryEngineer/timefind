@@ -209,57 +209,119 @@ h2 {
   resize: vertical;
 }
 
-.date-range-editor {
+.date-range-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.date-range-picker {
+  position: relative;
+}
+
+.date-range-picker .date-range-trigger {
+  width: 100%;
+  font: inherit;
+  text-align: left;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--panel-bg);
+  color: var(--text-h);
+  cursor: pointer;
+}
+
+.date-range-popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 20;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  padding: 16px;
+  width: max-content;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
 
-.mode-selector {
+.date-range-nav {
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
   gap: 8px;
 }
 
-.date-range-editor .mode-selector button {
-  font: inherit;
-  font-size: 14px;
-  font-weight: 500;
-  padding: 8px 12px;
+.date-range-nav .date-range-nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  font-size: 16px;
+  line-height: 1;
   border: 1px solid var(--border);
-  border-radius: 999px;
+  border-radius: 8px;
   background: var(--bg);
   color: var(--text-h);
   cursor: pointer;
 }
 
-.date-range-editor .mode-selector button:disabled {
-  opacity: 0.4;
+.date-range-nav .date-range-nav-btn:hover:not(:disabled) {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.date-range-nav .date-range-nav-btn:disabled {
+  opacity: 0.3;
   cursor: not-allowed;
 }
 
-.calendar-range-picker {
+.date-range-months {
   display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
+  gap: 16px;
 }
 
-.calendar-range-picker label {
+.date-range-scroll-months {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text-h);
+  gap: 16px;
+  max-height: 60vh;
+  overflow-y: auto;
 }
 
-.calendar-range-picker input {
+.month-card.range-month-card {
+  padding: 8px 12px;
+}
+
+.range-month-card .month-card-header-static {
+  padding: 0;
+}
+
+.date-range-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.date-range-actions button[type="button"]:not(.link-button) {
   font: inherit;
-  padding: 8px 10px;
-  border: 1px solid var(--border);
+  font-weight: 600;
+  padding: 8px 16px;
+  border: none;
   border-radius: 8px;
-  background: var(--panel-bg);
-  color: var(--text-h);
+  background: var(--accent);
+  color: white;
+  cursor: pointer;
+}
+
+.date-range-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .calendar-grid {
@@ -370,6 +432,17 @@ h2 {
 .cal-day.disabled {
   opacity: 0.3;
   cursor: not-allowed;
+}
+
+.cal-day.range-start,
+.cal-day.range-end {
+  background: var(--accent);
+  color: white;
+  font-weight: 600;
+}
+
+.cal-day.range-in-range {
+  background: var(--accent-bg);
 }
 
 .month-card-header-static {
@@ -897,5 +970,9 @@ h2 {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
+  }
+
+  .date-range-popover {
+    width: 100%;
   }
 }

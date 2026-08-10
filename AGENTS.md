@@ -64,6 +64,16 @@ the page. Pattern that's worked well:
 - `form_input` calls are not automatically captured by `gif_creator`
   recording (only `computer`/`navigate` actions are) — take an explicit
   `screenshot` right after if that state change needs to appear in a GIF.
+- Clicking elements **inside `EditEventModal`'s `<dialog>`** via the
+  `computer` tool (coordinates or `ref`) can silently do nothing — no
+  error, no state change, no visible effect — even though the exact same
+  click works fine on the same component when it's not inside a
+  `<dialog>`. Confirmed via `read_page`/DOM inspection that this is a
+  browser-automation quirk with native `<dialog>` top-layer stacking, not
+  an app bug: a direct `element.click()` via `javascript_tool` (find the
+  button, call `.click()` on it) works reliably where the `computer` tool
+  doesn't. If a click inside the edit modal appears to do nothing, try
+  that before assuming the component is broken.
 
 ## CSS gotchas specific to this codebase
 
@@ -96,13 +106,58 @@ the page. Pattern that's worked well:
   which can extend past the viewport even at `opacity: 0`). It doesn't
   affect the Grid view's own internal `overflow-x: auto` scroll, which is
   a separate nested scroll container.
-- The date-range calendar's drag-to-select has **toggle semantics**: a
-  drag starting on an already-selected cell removes days instead of
-  adding them. Don't try to build up a selection with multiple separate
-  drags from the same anchor point (e.g. `13→13`, then `13→14`, then
-  `13→15`) — each subsequent drag starts on an already-selected cell and
-  flips to remove-mode, net result is an empty selection. Use one
-  continuous drag per range.
+- The *availability* calendars (`CalendarGrid`/`MonthCard`, used for a
+  person's own free days and for the overlap views) have drag-to-select
+  with **toggle semantics**: a drag starting on an already-selected cell
+  removes days instead of adding them. Don't try to build up a selection
+  with multiple separate drags from the same anchor point (e.g. `13→13`,
+  then `13→14`, then `13→15`) — each subsequent drag starts on an
+  already-selected cell and flips to remove-mode, net result is an empty
+  selection. Use one continuous drag per range. (The event date-range
+  picker — `DateRangePicker`/`RangeMonthCard` — is unrelated and doesn't
+  have this issue; it's plain click-start/click-end, not drag-paint.)
+
+## Event date range
+
+The event's own date range (as opposed to a person's availability) is
+picked via `DateRangePicker` (+ `RangeMonthCard`) — a Google
+Flights/Airbnb-style popover: a compact trigger button showing "Aug 13 –
+Aug 16" opens a floating panel, click-start/click-end with hover-preview,
+explicit Done/Clear rather than auto-close. This replaced an older
+`DateRangeEditor` that rendered every month in the selected window inline
+on the page (multi-range, "Weekdays only"/"Weekends only" presets) —
+that component is gone; don't resurrect its patterns.
+
+**Desktop vs mobile (`≤640px`) are genuinely different interaction
+models here, not just a CSS reflow** — `DateRangePicker` tracks
+`isMobile` in JS via a `matchMedia` listener and branches its render:
+desktop shows two months side by side with prev/next arrow buttons
+(`.date-range-nav`); mobile drops the arrows entirely and instead renders
+a vertically stacked, internally-scrollable list of the next 12 months
+(`.date-range-scroll-months`, `max-height: 60vh; overflow-y: auto`) —
+scrolling *is* the month navigation on mobile. If you touch this
+component, check both branches; a CSS-only tweak to one won't
+necessarily apply to the other since they're different JSX trees, not
+the same markup reflowed.
+
+`RangeMonthCard` always renders **42 day cells (6 rows)** regardless of
+the actual month, via `monthCells(year, monthIndex, true)` — real months
+only need 4–6 rows, and letting the grid size to actual content meant the
+popover's height changed as you navigated between months (a 6-row month
+vs. a 4-row one), which reflowed the page underneath it and visibly
+shifted content under the cursor. Padding with trailing blank cells
+(`.cal-day.blank`) keeps every month's rendered height identical. This is
+opt-in on `monthCells` (default `padToSixRows = false`) specifically so
+`MonthCard`/`OverlapMonthCard` — which don't have this navigate-in-place
+problem, since they render all months in a range at once rather than
+swapping one in and out — aren't affected.
+
+**The backend/data model still supports multiple ranges**
+(`EventConfig.dateRanges: DateRange[]`) — that wasn't changed, and
+`api/server.js` still validates/stores an array. Only the *frontend UI*
+was scoped down to always produce a single-element array (one contiguous
+start/end range). If multi-range ever comes back, the array-based
+plumbing is still there; only the picker UI would need to change again.
 
 ## Backend conventions
 
